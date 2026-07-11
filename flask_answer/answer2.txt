@@ -1,0 +1,117 @@
+Project Structure
+project/
+│── app.py
+│── templates/
+│   ├── index.html
+│   └── success.html
+└── requirements.txt
+1. Install Required Packages
+pip install flask pymongo
+2. app.py
+from flask import Flask, render_template, request, redirect, url_for
+from pymongo import MongoClient
+
+app = Flask(__name__)
+
+# Replace with your MongoDB Atlas connection string
+MONGO_URI = "mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority"
+
+client = MongoClient(MONGO_URI)
+
+db = client["studentdb"]
+collection = db["students"]
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+
+@app.route("/submit", methods=["POST"])
+def submit():
+
+    name = request.form["name"]
+    email = request.form["email"]
+
+    try:
+        collection.insert_one({
+            "name": name,
+            "email": email
+        })
+
+        return redirect(url_for("success"))
+
+    except Exception as e:
+        return render_template("index.html", error=str(e))
+
+
+@app.route("/success")
+def success():
+    return render_template("success.html")
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+3. templates/index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Form</title>
+</head>
+<body>
+
+<h2>Student Registration</h2>
+
+{% if error %}
+<p style="color:red;">
+    {{ error }}
+</p>
+{% endif %}
+
+<form action="/submit" method="POST">
+
+    <label>Name</label><br>
+    <input type="text" name="name" required><br><br>
+
+    <label>Email</label><br>
+    <input type="email" name="email" required><br><br>
+
+    <button type="submit">Submit</button>
+
+</form>
+
+</body>
+</html>
+4. templates/success.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Success</title>
+</head>
+<body>
+
+<h2>Data submitted successfully</h2>
+
+<a href="/">Go Back</a>
+
+</body>
+</html>
+5. requirements.txt
+Flask
+pymongo
+Run the Application
+python app.py
+
+Open:
+
+http://127.0.0.1:5000/
+Output
+
+Successful submission
+
+User fills the form.
+Data is inserted into MongoDB Atlas.
+User is redirected to /success.
+
+The page displays:
+
+Data submitted successfully

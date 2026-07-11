@@ -1,0 +1,60 @@
+Project Structure
+flask_api/
+│── app.py
+└── data.json
+1. Create data.json
+[
+    {
+        "id": 1,
+        "name": "Pankaj",
+        "course": "BCA"
+    },
+    {
+        "id": 2,
+        "name": "Rahul",
+        "course": "MCA"
+    },
+    {
+        "id": 3,
+        "name": "Anjali",
+        "course": "B.Tech"
+    }
+]
+2. Create app.py
+from flask import Flask, jsonify
+import json
+
+app = Flask(__name__)
+
+@app.route("/api", methods=["GET"])
+def get_data():
+    with open("data.json", "r") as file:
+        data = json.load(file)
+    return jsonify(data)
+
+if __name__ == "__main__":
+    app.run(debug=True)
+3. Install Flask
+pip install flask
+4. Run the application
+python app.py
+5. Open in browser
+http://127.0.0.1:5000/api
+Expected Output
+[
+  {
+    "id": 1,
+    "name": "Pankaj",
+    "course": "BCA"
+  },
+  {
+    "id": 2,
+    "name": "Rahul",
+    "course": "MCA"
+  },
+  {
+    "id": 3,
+    "name": "Anjali",
+    "course": "B.Tech"
+  }
+]
